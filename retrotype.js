@@ -50,7 +50,8 @@ function retrotype (strings, options={}) {
         random: options.random || false,
         id: options.id || "retrotype",
         typeSpeed: options.typeSpeed || 200,
-        deleteSpeed: options.deleteSpeed || 100
+        deleteSpeed: options.deleteSpeed || 100,
+        initialTime: options.initialTime || options.interval
     };
 
     console.log(options);
@@ -68,7 +69,7 @@ function retrotype (strings, options={}) {
     var curString = strings.get();
     var nextString = strings.get(1);
         
-    var trueInterval = 0; //curString.length * options.deleteSpeed + nextString.length * options.typeSpeed + options.interval;
+    var trueInterval = options.initialTime; //curString.length * options.deleteSpeed + nextString.length * options.typeSpeed + options.interval;
         
     var execute = function() {
         
