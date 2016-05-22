@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+    
+    <p id="this">Initial string</p>
+    
+    <script src="retrotype.js"></script>
+    <script>
+        
+        var strings = [
+            "First string",
+            "Second string",
+            "Third string",
+            "Fourth string"
+        ];
+
+        retrotype(strings, {id: "this", interval: 5000});
+    </script>
+</body>
+</html>
