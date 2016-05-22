@@ -1,3 +1,49 @@
+function deleteString(string, element, speed) {
+    
+    var arr = string.split("");
+    
+    var interval = setInterval(function() {
+        
+        arr.pop();
+        element.innerHTML = arr.join("");
+        
+    }, speed);
+    
+    setTimeout(function() {
+        clearInterval(interval);
+    }, string.length * speed);
+}
+
+function typeString(string, element, speed) {
+    
+    var arr = string.split("");
+    var index = 0;
+
+    var interval = setInterval(function() {
+        
+        element.innerHTML += arr[index];
+        
+        index++;
+    }, speed);
+    
+    setTimeout(function() {
+        clearInterval(interval);
+    }, string.length * speed);
+}
+
+function Cycle(arr) {
+    this.arr = arr || [];
+    this.length = function() { return arr.length };
+    this.position = 0;
+    this.get = function(index) { return this.arr[index || this.position] };
+    this.next = function() {
+        this.position = ++this.position % this.length();
+        return this.get();
+    };
+    this.push = function(item) { this.arr.push(item) };
+    this.pop = function() { return this.arr.pop() };
+}
+
 function retrotype (strings, options={}) {
     options = {
         interval: options.interval || 2000,
@@ -7,56 +53,42 @@ function retrotype (strings, options={}) {
         deleteSpeed: options.deleteSpeed || 100
     };
 
-    console.log(strings);
     console.log(options);
+    
+    strings = new Cycle(strings);
+    
+    console.log(strings);
     
     var item = document.getElementById(options.id);
 
     console.log(item);
     
-    item.innerHTML = strings[0];
+    item.innerHTML = strings.get();
     
-    var i = 0;
-    var numStrings = strings.length;
-    var curString = strings[i];
-    var nextString = strings[i+1];
-    
-    var flag = 1;
-    var trueInterval = curString.length * options.deleteSpeed + nextString.length * options.typeSpeed + options.interval;
-    
-    console.log(i, numStrings);
+    var curString = strings.get();
+    var nextString = strings.get(1);
         
-    setInterval(function() {
+    var trueInterval = 0; //curString.length * options.deleteSpeed + nextString.length * options.typeSpeed + options.interval;
         
-            curString = strings[i];
-            i = ++i % strings.length;   // Updating i
-            nextString = strings[i];
+    var execute = function() {
+        
+            curString = strings.get();
+            nextString = strings.next();
 
-            console.log(curString);
-            console.log(nextString);
+            console.log(curString, nextString);            
 
-            // for (var j = curString.length - 1; j >= 0; j--) {
-            for (var j = 0; j <= curString.length; j++) {                
-                (function(length, index) {
-                    setTimeout(function() {
-                        
-                        item.innerHTML = curString.substring(0, index);
-                        
-                    }, (length - index) * options.deleteSpeed);
-                })(curString.length, j);
-            } 
+            deleteString(curString, item, options.deleteSpeed);
             
             setTimeout(function() {
-               for (var j = 1; j <= nextString.length; j++) {
-                    (function(index) {                
-                        setTimeout(function() {
-                            
-                            item.innerHTML = nextString.substring(0, index);
-                            
-                        }, index * options.typeSpeed);
-                    })(j);                
-                } 
+                typeString(nextString, item, options.typeSpeed);
             }, curString.length * options.deleteSpeed);
             
-    }, trueInterval);
+            trueInterval = curString.length * options.deleteSpeed + nextString.length * options.typeSpeed + options.interval;
+            
+            clearInterval(interval);
+            
+            interval = setInterval(execute, trueInterval);
+    }
+        
+    var interval = setInterval(execute, trueInterval);
 }
