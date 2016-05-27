@@ -12,6 +12,8 @@ function deleteString(string, element, speed) {
     setTimeout(function() {
         clearInterval(interval);
     }, string.length * speed);
+    
+    return interval;
 }
 
 function typeString(string, element, speed) {
@@ -29,6 +31,24 @@ function typeString(string, element, speed) {
     setTimeout(function() {
         clearInterval(interval);
     }, string.length * speed);
+    
+    return interval;
+}
+
+function clearIntervals(intervals) {
+    for (var i = 0; i < intervals.length; i++) {
+        clearInterval(intervals[i]);
+    }
+}
+
+function clearTimeouts(timeouts) {
+    for (var i = 0; i < timeouts.length; i++) {
+        clearTimeout(timeouts[i]);
+    }
+}
+
+function objToArray(obj) {
+    return Object.keys(obj).map(function (key) {return obj[key]});
 }
 
 function Cycle(arr) {
@@ -45,6 +65,7 @@ function Cycle(arr) {
 }
 
 function retrotype (strings, options={}) {
+    
     options = {
         interval: options.interval || 2000,
         random: options.random || false,
@@ -70,26 +91,38 @@ function retrotype (strings, options={}) {
     var nextString = strings.get(1);
         
     var trueInterval = options.initialTime; //curString.length * options.deleteSpeed + nextString.length * options.typeSpeed + options.interval;
+    var intervalIDs = {};
+    var timeoutIDs = {};
         
     var execute = function() {
         
             curString = strings.get();
             nextString = strings.next();
 
-            console.log(curString, nextString);            
-
-            deleteString(curString, item, options.deleteSpeed);
+            intervalIDs.delete = deleteString(curString, item, options.deleteSpeed);
             
-            setTimeout(function() {
-                typeString(nextString, item, options.typeSpeed);
+            timeoutIDs.type = setTimeout(function() {
+                intervalIDs.type = typeString(nextString, item, options.typeSpeed);
             }, curString.length * options.deleteSpeed);
             
             trueInterval = curString.length * options.deleteSpeed + nextString.length * options.typeSpeed + options.interval;
             
-            clearInterval(interval);
+            clearInterval(intervalID);
             
-            interval = setInterval(execute, trueInterval);
+            intervalID = setInterval(execute, trueInterval);
+            intervalIDs.main = intervalID;            
     }
         
-    var interval = setInterval(execute, trueInterval);
+    var intervalID = setInterval(execute, trueInterval);
+    
+    window.onblur = function () {
+        clearInterval(intervalID);
+        clearIntervals(objToArray(intervalIDs));
+        clearTimeouts(objToArray(timeoutIDs));
+        item.innerHTML = strings.next();
+    }
+    
+    window.onfocus = function () {
+        intervalID = setInterval(execute, trueInterval/2);
+    }
 }
