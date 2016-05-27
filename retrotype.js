@@ -115,14 +115,14 @@ function retrotype (strings, options={}) {
         
     var intervalID = setInterval(execute, trueInterval);
     
-    window.onblur = function () {
+    window.addEventListener('blur', function () {
         clearInterval(intervalID);
         clearIntervals(objToArray(intervalIDs));
         clearTimeouts(objToArray(timeoutIDs));
         item.innerHTML = strings.next();
-    }
+    }, true)
     
-    window.onfocus = function () {
+    window.addEventListener('focus', function () {
         intervalID = setInterval(execute, trueInterval/2);
-    }
+    }, true)
 }
